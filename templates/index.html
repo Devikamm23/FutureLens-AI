@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>FutureLens AI</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        header {
+            background: #172033;
+            color: white;
+            padding: 38px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 40px;
+        }
+
+        header p {
+            margin-top: 10px;
+            color: #cbd5e1;
+            font-size: 17px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+
+        .panel h2 {
+            margin-top: 0;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .control {
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        .button-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        button {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .compare-button {
+            background: #7c3aed;
+        }
+
+        .compare-button:hover {
+            background: #6d28d9;
+        }
+
+        .results {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+
+        .icon {
+            font-size: 28px;
+        }
+
+        .card-title {
+            color: #64748b;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        .value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .subtext {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .status {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 5px 9px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-shortage {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .status-near_capacity {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-available {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        #updatedAt {
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 16px;
+        }
+
+        .recommendation {
+            background: #eff6ff;
+            border-left: 5px solid #2563eb;
+            padding: 13px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .comparison-card {
+            background: #f8fafc;
+            padding: 18px;
+            border-radius: 12px;
+        }
+
+        .increase {
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        canvas {
+            max-height: 420px;
+        }
+
+        @media(max-width: 850px) {
+
+            .results {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .controls {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media(max-width: 550px) {
+
+            .results {
+                grid-template-columns: 1fr;
+            }
+
+            .button-row {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>🌍 FutureLens AI</h1>
+
+    <p>
+        Intelligent What-If Simulation for College Infrastructure
+    </p>
+
+</header>
+
+
+<div class="container">
+
+
+    <div class="panel">
+
+        <h2>📡 Live Campus + Future Scenario Planner</h2>
+
+        <p>
+            Enter current facility counts, then change future campus conditions
+            to identify shortages before they happen.
+        </p>
+
+        <div id="updatedAt">Not checked yet</div>
+
+
+        <div class="controls">
+
+
+            <div class="control">
+
+                <div class="control-header">
+
+                    <span>👨‍🎓 Students</span>
+
+                    <span id="studentsValue">7100</span>
+
+                </div>
+
+                <input
+                    type="range"
+                    id="students"
+                    min="500"
+                    max="15000"
+                    value="7100"
+                    step="100"
+                    oninput="updateStudentValue()"
+                >
+
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="students1Input">👥 Students in 1 Year</label>
+                </div>
+                <input type="number" id="students1Input" min="1" value="7800">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="students3Input">👥 Students in 3 Years</label>
+                </div>
+                <input type="number" id="students3Input" min="1" value="9000">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="students5Input">👥 Students in 5 Years</label>
+                </div>
+                <input type="number" id="students5Input" min="1" value="10500">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="students10Input">👥 Students in 10 Years</label>
+                </div>
+                <input type="number" id="students10Input" min="1" value="12500">
+            </div>
+
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="benchesInput">🪑 Current Benches</label>
+                </div>
+                <input type="number" id="benchesInput" min="0" value="3000">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="departmentsInput">🏢 Future Departments</label>
+                </div>
+                <input type="number" id="departmentsInput" min="0" value="8">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="facultyInput">👩‍🏫 Future Faculty</label>
+                </div>
+                <input type="number" id="facultyInput" min="0" value="250">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="coursesInput">📖 Future Courses</label>
+                </div>
+                <input type="number" id="coursesInput" min="0" value="120">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="classSizeInput">👥 Average Class Size</label>
+                </div>
+                <input type="number" id="classSizeInput" min="1" value="40">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="attendanceInput">📊 Attendance Rate (%)</label>
+                </div>
+                <input type="number" id="attendanceInput" min="0" max="100" value="80">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="libraryUsageInput">📚 Library Usage (%)</label>
+                </div>
+                <input type="number" id="libraryUsageInput" min="0" max="100" value="50">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="labUsageInput">🧪 Lab Usage (%)</label>
+                </div>
+                <input type="number" id="labUsageInput" min="0" max="100" value="50">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="eventsInput">🎪 Events Per Month</label>
+                </div>
+                <input type="number" id="eventsInput" min="0" value="2">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="staffInput">🧑‍💼 Future Staff</label>
+                </div>
+                <input type="number" id="staffInput" min="0" value="100">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="hoursInput">🕐 Working Hours</label>
+                </div>
+                <input type="number" id="hoursInput" min="1" max="24" value="8">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="onlineInput">💻 Online / Hybrid Classes (%)</label>
+                </div>
+                <input type="number" id="onlineInput" min="0" max="100" value="20">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="hostelInput">🛏️ Hostel Residents</label>
+                </div>
+                <input type="number" id="hostelInput" min="0" value="500">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="periodInput">📅 Demand Period</label>
+                </div>
+                <select id="periodInput">
+                    <option value="normal">Normal semester</option>
+                    <option value="exams">Exams</option>
+                    <option value="admissions">Admissions</option>
+                </select>
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="seasonalInput">🌦️ Seasonal Demand (%)</label>
+                </div>
+                <input type="number" id="seasonalInput" min="0" max="100" value="0">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="expansionInput">🏗️ Campus Expansion (%)</label>
+                </div>
+                <input type="number" id="expansionInput" min="0" max="100" value="0">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="closuresInput">🚧 Building Closures (%)</label>
+                </div>
+                <input type="number" id="closuresInput" min="0" max="50" value="0">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="accessibilityInput">♿ Accessibility Policy (%)</label>
+                </div>
+                <input type="number" id="accessibilityInput" min="0" max="100" value="0">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="newLabsInput">🔬 New Labs</label>
+                </div>
+                <input type="number" id="newLabsInput" min="0" value="0">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="newLibraryInput">📚 New Library Seats</label>
+                </div>
+                <input type="number" id="newLibraryInput" min="0" value="0">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="classroomsInput">🏫 Current Classrooms</label>
+                </div>
+                <input type="number" id="classroomsInput" min="0" value="80">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="labsInput">🧪 Current Labs</label>
+                </div>
+                <input type="number" id="labsInput" min="0" value="25">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="libraryInput">📚 Current Library Seats</label>
+                </div>
+                <input type="number" id="libraryInput" min="0" value="700">
+            </div>
+
+            <div class="control">
+                <div class="control-header">
+                    <label for="washroomsInput">🚻 Current Washrooms</label>
+                </div>
+                <input type="number" id="washroomsInput" min="0" value="45">
+            </div>
+
+        </div>
+
+
+        <div class="button-row">
+
+            <button onclick="simulate()">
+                📡 CHECK LIVE STATUS
+            </button>
+
+            <button
+                class="compare-button"
+                onclick="compareScenario()"
+            >
+                🔄 COMPARE WITH CURRENT
+            </button>
+
+            <button onclick="forecastCampus()">
+                🗓️ BUILD 10-YEAR FORECAST
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div id="resultsSection" class="hidden">
+
+
+        <div class="results">
+
+
+            <div class="card">
+
+                <div class="icon">🪑</div>
+
+                <div class="card-title">
+                    Benches
+                </div>
+
+                <div
+                    class="value"
+                    id="benches"
+                >
+                    --
+                </div>
+
+                <div class="subtext">
+                    Current / Required
+                </div>
+
+                <div class="status" id="benchesStatus">Not checked</div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="icon">🚻</div>
+
+                <div class="card-title">
+                    Washrooms
+                </div>
+
+                <div
+                    class="value"
+                    id="washrooms"
+                >
+                    --
+                </div>
+
+                <div class="subtext">
+                    Current / Required
+                </div>
+
+                <div class="status" id="washroomsStatus">Not checked</div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="icon">🏫</div>
+
+                <div class="card-title">
+                    Classrooms
+                </div>
+
+                <div
+                    class="value"
+                    id="classrooms"
+                >
+                    --
+                </div>
+
+                <div class="subtext">
+                    Current / Required
+                </div>
+
+                <div class="status" id="classroomsStatus">Not checked</div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="icon">🧪</div>
+
+                <div class="card-title">
+                    Labs
+                </div>
+
+                <div
+                    class="value"
+                    id="labs"
+                >
+                    --
+                </div>
+
+                <div class="subtext">
+                    Current / Required
+                </div>
+
+                <div class="status" id="labsStatus">Not checked</div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="icon">📚</div>
+
+                <div class="card-title">
+                    Library Seats
+                </div>
+
+                <div
+                    class="value"
+                    id="library"
+                >
+                    --
+                </div>
+
+                <div class="subtext">
+                    Current / Required
+                </div>
+
+                <div class="status" id="libraryStatus">Not checked</div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="icon">🚗</div>
+
+                <div class="card-title">
+                    Parking
+                </div>
+
+                <div
+                    class="value"
+                    id="parking"
+                >
+                    --
+                </div>
+
+                <div class="subtext">
+                    Spaces
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="icon">🍱</div>
+
+                <div class="card-title">
+                    Canteen Seats
+                </div>
+
+                <div
+                    class="value"
+                    id="canteen"
+                >
+                    --
+                </div>
+
+                <div class="subtext">
+                    Required
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel">
+
+            <h2>
+                📊 Infrastructure Forecast
+            </h2>
+
+            <canvas id="facilityChart"></canvas>
+
+        </div>
+
+
+        <div class="panel">
+
+            <h2>
+                🤖 AI Recommendations
+            </h2>
+
+            <div id="recommendations"></div>
+
+        </div>
+
+    </div>
+
+
+    <div id="forecastSection" class="panel hidden">
+        <h2>🤖 AI Future Recommendation</h2>
+        <div id="forecastSummary" class="recommendation"></div>
+        <div id="forecastPriority" class="recommendation"></div>
+        <div class="comparison-grid" id="forecastGrid"></div>
+    </div>
+
+
+    <div
+        id="comparisonSection"
+        class="panel hidden"
+    >
+
+        <h2>
+            🔄 Current vs Future Scenario
+        </h2>
+
+        <div
+            id="comparisonGrid"
+            class="comparison-grid"
+        ></div>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+function updateStudentValue() {
+
+    document.getElementById("studentsValue").innerText =
+        document.getElementById("students").value;
+
+}
+
+
+function getScenario() {
+
+    return {
+
+        students:
+            Number(
+                document.getElementById(
+                    "students"
+                ).value
+            ),
+
+        benches: Number(document.getElementById("benchesInput").value),
+        classrooms: Number(document.getElementById("classroomsInput").value),
+        labs: Number(document.getElementById("labsInput").value),
+        library_seats: Number(document.getElementById("libraryInput").value),
+        washrooms: Number(document.getElementById("washroomsInput").value),
+        departments: Number(document.getElementById("departmentsInput").value),
+        faculty: Number(document.getElementById("facultyInput").value),
+        courses: Number(document.getElementById("coursesInput").value),
+        average_class_size: Number(document.getElementById("classSizeInput").value),
+        attendance_rate: Number(document.getElementById("attendanceInput").value),
+        library_usage_percent: Number(document.getElementById("libraryUsageInput").value),
+        lab_usage_percent: Number(document.getElementById("labUsageInput").value),
+        events_per_month: Number(document.getElementById("eventsInput").value),
+        staff: Number(document.getElementById("staffInput").value),
+        working_hours: Number(document.getElementById("hoursInput").value),
+        online_hybrid_percent: Number(document.getElementById("onlineInput").value),
+        hostel_residents: Number(document.getElementById("hostelInput").value),
+        demand_period: document.getElementById("periodInput").value,
+        seasonal_demand_percent: Number(document.getElementById("seasonalInput").value),
+        campus_expansion_percent: Number(document.getElementById("expansionInput").value),
+        building_closures: Number(document.getElementById("closuresInput").value),
+        accessibility_policy_percent: Number(document.getElementById("accessibilityInput").value),
+        new_labs: Number(document.getElementById("newLabsInput").value),
+        new_library_seats: Number(document.getElementById("newLibraryInput").value)
+
+    };
+
+}
+
+
+function getForecastScenario() {
+
+    return {
+        ...getScenario(),
+        students_1: Number(document.getElementById("students1Input").value),
+        students_3: Number(document.getElementById("students3Input").value),
+        students_5: Number(document.getElementById("students5Input").value),
+        students_10: Number(document.getElementById("students10Input").value)
+    };
+
+}
+
+
+async function forecastCampus() {
+
+    try {
+        const response = await fetch("/forecast", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(getForecastScenario())
+        });
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error(result.error || "Forecast failed");
+        }
+
+        document.getElementById("forecastSection").classList.remove("hidden");
+        document.getElementById("forecastSummary").innerText =
+            `AI Prediction: Student population is expected to increase by ${result.recommendation.growth_percent_3_year}% in the next 3 years.`;
+        document.getElementById("forecastPriority").innerText =
+            result.recommendation.priority;
+
+        const grid = document.getElementById("forecastGrid");
+        grid.innerHTML = "";
+        const labels = {
+            benches: "Benches",
+            classrooms: "Classrooms",
+            faculty: "Faculty",
+            labs: "Labs",
+            library_seats: "Library seats",
+            washrooms: "Washrooms",
+            parking: "Parking spaces",
+            computers: "Computer systems"
+        };
+
+        result.forecast.forEach(point => {
+            const card = document.createElement("div");
+            card.className = "comparison-card";
+            card.innerHTML = `<strong>${point.label}</strong><p>Students: <strong>${point.students.toLocaleString()}</strong></p>`;
+            Object.keys(labels).forEach(name => {
+                card.innerHTML += `<p>${labels[name]}: <strong>${point.requirements[name].toLocaleString()}</strong></p>`;
+            });
+            grid.appendChild(card);
+        });
+    } catch (error) {
+        alert(error.message);
+        console.error(error);
+    }
+
+}
+
+
+let facilityChart = null;
+
+
+async function simulate() {
+
+    const scenario = getScenario();
+
+    try {
+
+        const response = await fetch(
+            "/simulate",
+            {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify(scenario)
+
+            }
+        );
+
+
+        const result =
+            await response.json();
+
+
+        if (!result.success) {
+
+            throw new Error(
+                "Simulation failed"
+            );
+
+        }
+
+
+        showResults(
+            result.predicted,
+            result.recommendations,
+            result.analysis
+        );
+
+    }
+
+    catch(error) {
+
+        alert(
+            "Unable to connect to FutureLens AI. Make sure app.py is running."
+        );
+
+        console.error(error);
+
+    }
+
+}
+
+
+function showResults(
+    predicted,
+    recommendations,
+    analysis = null
+) {
+
+    document
+        .getElementById(
+            "resultsSection"
+        )
+        .classList
+        .remove("hidden");
+
+
+    const displayValue = (name) => analysis
+        ? `${analysis[name].actual.toLocaleString()} / ${analysis[name].required.toLocaleString()}`
+        : predicted[name].toLocaleString();
+
+    if (analysis) {
+        const statusIds = {
+            benches: "benchesStatus",
+            washrooms: "washroomsStatus",
+            classrooms: "classroomsStatus",
+            labs: "labsStatus",
+            library_seats: "libraryStatus"
+        };
+
+        Object.keys(statusIds).forEach(name => {
+            const status = analysis[name].status;
+            const element = document.getElementById(statusIds[name]);
+            element.className = `status status-${status}`;
+            element.innerText = status.replace("_", " ");
+        });
+
+        document.getElementById("updatedAt").innerText =
+            `Last checked: ${new Date().toLocaleString()}`;
+    }
+
+    document.getElementById("benches").innerText = displayValue("benches");
+
+
+    document.getElementById("washrooms").innerText = displayValue("washrooms");
+
+
+    document.getElementById("classrooms").innerText = displayValue("classrooms");
+
+
+    document.getElementById("labs").innerText = displayValue("labs");
+
+
+    document.getElementById("library").innerText = displayValue("library_seats");
+
+
+    document.getElementById(
+        "parking"
+    ).innerText =
+        predicted.parking.toLocaleString();
+
+
+    document.getElementById(
+        "canteen"
+    ).innerText =
+        predicted.canteen_seats.toLocaleString();
+
+
+    const box =
+        document.getElementById(
+            "recommendations"
+        );
+
+    box.innerHTML = "";
+
+
+    recommendations.forEach(
+        recommendation => {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+            div.className =
+                "recommendation";
+
+            div.innerText =
+                "💡 " +
+                recommendation;
+
+            box.appendChild(div);
+
+        }
+    );
+
+
+    createChart(predicted, analysis);
+
+}
+
+
+function createChart(predicted, analysis = null) {
+
+    const canvas =
+        document.getElementById(
+            "facilityChart"
+        );
+
+
+    if (facilityChart) {
+
+        facilityChart.destroy();
+
+    }
+
+
+    facilityChart =
+        new Chart(
+            canvas,
+            {
+
+                type: "bar",
+
+                data: {
+
+                    labels: analysis
+                        ? ["Benches", "Washrooms", "Classrooms", "Labs", "Library Seats"]
+                        : ["Benches", "Washrooms", "Classrooms", "Labs", "Library Seats", "Parking", "Canteen Seats"],
+
+                    datasets: [{
+
+                        label:
+                            analysis ? "Required" : "Predicted Requirement",
+
+                        data: [
+                            ...(analysis
+                                ? ["benches", "washrooms", "classrooms", "labs", "library_seats"].map(name => analysis[name].required)
+                                : [predicted.benches, predicted.washrooms, predicted.classrooms, predicted.labs, predicted.library_seats, predicted.parking, predicted.canteen_seats])
+                        ]
+
+                    }, ...(analysis ? [{
+                        label: "Current",
+                        data: ["benches", "washrooms", "classrooms", "labs", "library_seats"].map(name => analysis[name].actual)
+                    }] : [])]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    scales: {
+
+                        y: {
+                            beginAtZero: true
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+}
+
+
+async function compareScenario() {
+
+    const future =
+        getScenario();
+
+
+    const current = {
+
+        students: 5000,
+
+        vehicles: 2000,
+
+        temperature: 28,
+
+        working_hours: 8
+
+    };
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/compare",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            current,
+                            future
+                        })
+
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        showResults(
+            result.future,
+            result.recommendations
+        );
+
+
+        const section =
+            document.getElementById(
+                "comparisonSection"
+            );
+
+        section.classList.remove(
+            "hidden"
+        );
+
+
+        const grid =
+            document.getElementById(
+                "comparisonGrid"
+            );
+
+        grid.innerHTML = "";
+
+
+        const names = {
+
+            benches: "🪑 Benches",
+
+            washrooms: "🚻 Washrooms",
+
+            classrooms: "🏫 Classrooms",
+
+            labs: "🧪 Labs",
+
+            library_seats:
+                "📚 Library Seats",
+
+            parking: "🚗 Parking",
+
+            canteen_seats:
+                "🍱 Canteen Seats"
+
+        };
+
+
+        Object.keys(result.changes)
+            .forEach(key => {
+
+                const item =
+                    result.changes[key];
+
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+                card.className =
+                    "comparison-card";
+
+
+                const sign =
+                    item.change_percent >= 0
+                        ? "+"
+                        : "";
+
+
+                card.innerHTML = `
+
+                    <strong>
+                        ${names[key]}
+                    </strong>
+
+                    <p>
+                        Current:
+                        <strong>
+                            ${item.current.toLocaleString()}
+                        </strong>
+                    </p>
+
+                    <p>
+                        Future:
+                        <strong>
+                            ${item.future.toLocaleString()}
+                        </strong>
+                    </p>
+
+                    <p class="increase">
+                        Change:
+                        ${sign}${item.change_percent}%
+                    </p>
+
+                `;
+
+
+                grid.appendChild(card);
+
+            });
+
+    }
+
+    catch(error) {
+
+        alert(
+            "Comparison failed. Check that the Flask server is running."
+        );
+
+        console.error(error);
+
+    }
+
+}
+
+
+</script>
+
+</body>
+
+</html>
